@@ -42,3 +42,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem 'graphql'
 gem 'graphiql-rails'
 gem 'sprockets', '< 4' # これがないとgraphql:installできない(4系に対応してないっぽい？)
+
+gem 'devise'
