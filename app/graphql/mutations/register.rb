@@ -1,37 +1,30 @@
 module Mutations
+  require 'pry'
   class Register < BaseMutation
     graphql_name 'Register'
 
-    field :id, Integer, null: false
-    field :token, String, null: false
-    field :result, Boolean, null: true
+    # class AuthProviderSignupData < Types::BaseInputObject
+    #   argument :credentials, Types::AuthProviderCredentialsInput, required: false
+    # end
 
+    # often we will need input types for specific mutation
+    # in those cases we can define those input types in the mutation class itself
+    argument :name, String, required: true
+    # argument :auth_provider, AuthProviderSignupData, required: false
     argument :email, String, required: true
     argument :password, String, required: true
-    argument :first_name, String, required: true
-    argument :last_name, String, required: true
+
+    field :user, Types::UserType, null: false
 
     def resolve(**args)
-      user = context[:current_user]
-      if user.present?
-        GraphQL::ExecutionError.new("You are already logged-in.")
-      end
-
       user = User.create!(
+        name: args[:name],
         email: args[:email],
-        password: args[:password],
-        first_name: args[:first_name],
-        last_name: args[:last_name]
+        password: args[:password]
       )
-
-      if user.present?
-        context[:current_user] = user
-        {
-          id: user.id,
-          token: "test_token",
-          result: true
-        }
-      end
+      {
+        user: user
+      }
     end
   end
 end

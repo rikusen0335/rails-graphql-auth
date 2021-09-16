@@ -1,4 +1,5 @@
 module Types
+  require 'pry'
   class QueryType < Types::BaseObject
     # Add `node(id: ID!) and `nodes(ids: [ID!]!)`
     include GraphQL::Types::Relay::HasNodeField
@@ -7,9 +8,14 @@ module Types
     # Add root-level fields here.
     # They will be entry points for queries on your schema.
 
-    field :posts, [Types::PostType], null: false
+    field :error, String, null: true
+    field :posts, [Types::PostType], null: true
     def posts
-      Post.all
+      if context[:current_user].present?
+        Post.all
+      else
+        { error: "Unauthorized" }
+      end
     end
 
     field :post, Types::PostType, null: false do
